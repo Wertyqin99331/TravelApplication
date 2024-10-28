@@ -1,0 +1,36 @@
+﻿services:
+  journeyapp.webapi:
+    image: journeyapp.webapi
+    build:
+      context: .
+      dockerfile: JourneyApp.WebApi/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "journeyapp.database"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  journeyapp.database:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=journeyapp
+    volumes:
+      - journeyapp.pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=flywotbl@mail.ru
+      - PGADMIN_DEFAULT_PASSWORD=Wertyqin923134
+    ports:
+      - "8081:80"
+    depends_on:
+      - "journeyapp.database"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+volumes:
+  journeyapp.pgdata:
+  pgadmin:

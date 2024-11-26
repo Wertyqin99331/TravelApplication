@@ -21,13 +21,14 @@ def insert_data(json_file_path):
     for trip in trips_data:
         trip_id = str(uuid.uuid4())
         cursor.execute("""
-            INSERT INTO public."Trips" ("Id", "Price", "StartDate", "EndDate", "City", "Description")
+            INSERT INTO public."Trips" ("Id", "Price", "StartDate", "EndDate", "Country", "City", "Description")
             VALUES (%s, %s, %s, %s, %s, %s)
             """, (
                 trip_id,
                 trip["price"],
                 datetime.strptime(trip["start_date"], "%Y-%m-%d").date(),
                 datetime.strptime(trip["end_date"], "%Y-%m-%d").date(),
+                trip["country"],
                 trip["city"],
                 trip["description"]
             )

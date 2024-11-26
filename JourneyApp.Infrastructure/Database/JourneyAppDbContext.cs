@@ -14,6 +14,11 @@ public class JourneyAppDbContext(IConfiguration configuration)
     : IdentityDbContext<User, IdentityRole<Guid>, Guid>, IJourneyAppDbContext
 {
     public DbSet<Trip> Trips { get; set; } = null!;
+    
+    public Task<int> SaveChangesAsync()
+    {
+        return base.SaveChangesAsync();
+    }
 
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

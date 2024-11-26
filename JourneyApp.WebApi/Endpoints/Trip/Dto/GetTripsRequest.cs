@@ -8,6 +8,7 @@ public class GetTripsRequest
 {
     public int Page { get; set; } = 1;
     public int PageSize { get; set; } = 10;
+    public string? Country { get; set; }
     public string? City { get; set; }
     public int? MinPrice { get; set; }
     public int? MaxPrice { get; set; }

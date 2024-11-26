@@ -27,7 +27,15 @@ public class TripConfiguration : IEntityTypeConfiguration<Trip>
                 .HasColumnName("Description");
         });
 
+        builder.ComplexProperty(t => t.Country, propertyBuilder =>
+        {
+            propertyBuilder.Property(c => c.Value)
+                .HasMaxLength(Country.MAX_COUNTRY_LENGTH)
+                .HasColumnName("Country");
+        });
+
         builder.Ignore(t => t.AverageRating);
+        builder.Ignore(t => t.OverallPrice);
 
         builder.HasMany(t => t.Days)
             .WithOne(d => d.Trip)

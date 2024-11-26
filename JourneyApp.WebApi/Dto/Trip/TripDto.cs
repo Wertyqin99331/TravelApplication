@@ -1,6 +1,3 @@
-using JourneyApp.Core.Models.Trip;
-using JourneyApp.Core.Models.TripReview;
-
 namespace JourneyApp.WebApi.Dto.Trip;
 
 public record TripDto(Guid Id, string City, string Description, 

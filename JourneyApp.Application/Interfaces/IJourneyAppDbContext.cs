@@ -9,4 +9,6 @@ public interface IJourneyAppDbContext
 {
     DbSet<User> Users { get; }
     DbSet<Trip> Trips { get; }
+    
+    Task<int> SaveChangesAsync();
 }

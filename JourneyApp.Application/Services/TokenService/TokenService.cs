@@ -1,14 +1,17 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CSharpFunctionalExtensions;
 using JourneyApp.Application.Options;
+using JourneyApp.Core.CommonTypes;
 using JourneyApp.Core.Models.User;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace JourneyApp.Application.Services.TokenService;
 
-public class TokenService(IOptions<JwtOptions> jwtOptions): ITokenService
+public class TokenService(IOptions<JwtOptions> jwtOptions, IHttpContextAccessor httpContextAccessor): ITokenService
 {
     public string GenerateToken(User user, IList<string> roles)
     {
@@ -22,7 +25,16 @@ public class TokenService(IOptions<JwtOptions> jwtOptions): ITokenService
 
         return token;
     }
-    
+
+    public Result<string, ApplicationError> ReadValueFromClaims(string claimType)
+    {
+        if (httpContextAccessor.HttpContext is null)
+            return new ApplicationError("Http контекст не найден");
+
+        var claimValue = httpContextAccessor.HttpContext.User.FindFirstValue(claimType);
+        return claimValue ?? Result.Failure<string, ApplicationError>(new ApplicationError("Не удалось прочитать значение claim"));
+    }
+
     private string GenerateToken(IEnumerable<Claim> claims)
     {
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Secret));

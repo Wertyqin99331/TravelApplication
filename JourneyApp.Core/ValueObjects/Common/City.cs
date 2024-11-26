@@ -39,6 +39,8 @@ public class CityMapping: IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+        
+        
         config.NewConfig<City, string>()
             .MapWith(src => src.Value);
     }

@@ -22,7 +22,7 @@ def insert_data(json_file_path):
         trip_id = str(uuid.uuid4())
         cursor.execute("""
             INSERT INTO public."Trips" ("Id", "Price", "StartDate", "EndDate", "Country", "City", "Description")
-            VALUES (%s, %s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 trip_id,
                 trip["price"],

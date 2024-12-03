@@ -22,6 +22,7 @@ public class Trip
 
     public List<TripDay> Days { get; set; } = [];
     public List<TripReview.TripReview> Reviews { get; set; } = [];
+    public List<User.User> FavoritedByUsers { get; set; } = [];
 
     protected Trip()
     {

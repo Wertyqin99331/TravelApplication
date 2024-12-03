@@ -20,6 +20,14 @@ builder.Services.AddGlobalExceptionHandler();
 
 builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-XSRF-TOKEN";
+    options.Cookie.Name = "XSRF-TOKEN";
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 builder.Services.AddAndConfigureMapster();
 
 var app = builder.Build();
@@ -36,7 +44,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAntiforgery();
 
 var prefix = app.MapGroup("/api");
 prefix.MapAuthenticationEndpoints();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JourneyApp.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace JourneyApp.Infrastructure.Migrations
 {
     [DbContext(typeof(JourneyAppDbContext))]
-    partial class JourneyAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241202202828_AddAvatarUrlToUser")]
+    partial class AddAvatarUrlToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -411,21 +414,6 @@ namespace JourneyApp.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("TripUser", b =>
-                {
-                    b.Property<Guid>("FavoriteTripsId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("FavoritedByUsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("FavoriteTripsId", "FavoritedByUsersId");
-
-                    b.HasIndex("FavoritedByUsersId");
-
-                    b.ToTable("TripUser");
-                });
-
             modelBuilder.Entity("JourneyApp.Core.Models.Trip.TripDay", b =>
                 {
                     b.HasOne("JourneyApp.Core.Models.Trip.Trip", "Trip")
@@ -514,21 +502,6 @@ namespace JourneyApp.Infrastructure.Migrations
                     b.HasOne("JourneyApp.Core.Models.User.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TripUser", b =>
-                {
-                    b.HasOne("JourneyApp.Core.Models.Trip.Trip", null)
-                        .WithMany()
-                        .HasForeignKey("FavoriteTripsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("JourneyApp.Core.Models.User.User", null)
-                        .WithMany()
-                        .HasForeignKey("FavoritedByUsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

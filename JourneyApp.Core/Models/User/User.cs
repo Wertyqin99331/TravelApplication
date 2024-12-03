@@ -9,8 +9,10 @@ public class User : IdentityUser<Guid>
 {
     public Name Name { get; set; } = null!;
     public Name Surname { get; set; } = null!;
+    public string? AvatarUrl { get; set; }
 
     public List<TripReview.TripReview> TripReviews { get; set; } = [];
+    public List<Trip.Trip> FavoriteTrips { get; set; } = [];
 
     public static Result<User, ApplicationError> Create(string email, string name, string surname)
     {

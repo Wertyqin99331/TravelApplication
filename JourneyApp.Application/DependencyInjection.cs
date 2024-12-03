@@ -13,7 +13,6 @@ public static class DependencyInjection
     {
         services.AddScoped<TripService>();
         services.AddScoped<ITokenService, TokenService>();
-        services.AddScoped<UserService>();
         
         services.AddOptionsWithValidation<JwtOptions>(JwtOptions.SECTION_NAME);
     }

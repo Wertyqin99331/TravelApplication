@@ -1,7 +1,10 @@
 using System.Data;
 using JourneyApp.Application.Extensions;
 using JourneyApp.Application.Interfaces;
+using JourneyApp.Application.Options;
 using JourneyApp.Application.Services.Authentication;
+using JourneyApp.Application.Services.FileStorageService;
+using JourneyApp.Application.Services.UserService;
 using JourneyApp.Core.Models.User;
 using JourneyApp.Infrastructure.Database;
 using JourneyApp.Infrastructure.Options;
@@ -34,8 +37,15 @@ public static class DependencyInjection
                 options.User.RequireUniqueEmail = identityPasswordOptions.RequireUniqueEmail;
             })
             .AddUserManager<UserManager<User>>()
-            .AddEntityFrameworkStores<JourneyAppDbContext>();
+            .AddEntityFrameworkStores<JourneyAppDbContext>()
+            .AddDefaultTokenProviders();
 
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IFileStorageService, MinioService>();
+        services.AddHttpContextAccessor();
+
+        // Configure MinioOptions
+        services.AddOptionsWithValidation<MinioOptions>(MinioOptions.SECTION_NAME);
     }
 }

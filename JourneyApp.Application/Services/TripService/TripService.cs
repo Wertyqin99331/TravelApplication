@@ -1,19 +1,22 @@
 using CSharpFunctionalExtensions;
 using JourneyApp.Application.Interfaces;
 using JourneyApp.Application.Services.TripService.Dto;
+using JourneyApp.Application.Services.UserService;
 using JourneyApp.Core.CommonTypes;
 using JourneyApp.Core.Models.Trip;
 using JourneyApp.Core.Models.TripReview;
 using JourneyApp.Core.Models.User;
+using JourneyApp.Application.Dto.Trip;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace JourneyApp.Application.Services.TripService;
 
-public class TripService(IJourneyAppDbContext dbContext, UserService.UserService userService, ILogger<TripService> logger)
+public class TripService(IJourneyAppDbContext dbContext, IUserService userService, ILogger<TripService> logger)
 {
-    public async Task<Result<List<Trip>, ApplicationError>> GetTripsAsync(GetTripsBody body)
+    public async Task<Result<List<TripDto>, ApplicationError>> GetTripsAsync(GetTripsBody body)
     {
         logger.LogInformation($"Min rating is {body.MinRating}");
         
@@ -72,7 +75,8 @@ public class TripService(IJourneyAppDbContext dbContext, UserService.UserService
                 .Where(t => t.Days.Count <= body.MaxDaysCount);
         }
 
-        var trips = await query.ToListAsync();
+        var trips = await query.ProjectToType<TripDto>()
+            .ToListAsync();
 
         var filteredTrips = trips
             .Skip((body.Page - 1) * body.PageSize)
@@ -80,11 +84,11 @@ public class TripService(IJourneyAppDbContext dbContext, UserService.UserService
             .ToList();
 
         var tripsWithRating = filteredTrips
-            // .Where(t => t.AverageRating >= body.MinRating)
             .ToList();
         logger.LogInformation($"Result len is {tripsWithRating.Count}");
-        
-        return tripsWithRating;
+
+        var tripDtos = tripsWithRating.Adapt<List<TripDto>>();
+        return tripDtos;
     }
 
     public async Task<UnitResult<ApplicationError>> AddTripReviewAsync(AddTripReviewBody body)
@@ -109,5 +113,65 @@ public class TripService(IJourneyAppDbContext dbContext, UserService.UserService
         await dbContext.SaveChangesAsync();
         
         return UnitResult.Success<ApplicationError>();
+    }
+
+    public async Task<UnitResult<ApplicationError>> AddToFavoritesAsync(Guid tripId)
+    {
+        var currentUser = await userService.GetUserFromTokenAsync();
+        if (currentUser.IsFailure)
+            return currentUser.Error;
+
+        var trip = await dbContext.Trips
+            .Include(t => t.FavoritedByUsers)
+            .FirstOrDefaultAsync(t => t.Id == tripId);
+            
+        if (trip == null)
+            return new ApplicationError("Trip not found");
+
+        if (trip.FavoritedByUsers.Any(u => u.Id == currentUser.Value.Id))
+            return new ApplicationError("Trip is already in favorites");
+
+        trip.FavoritedByUsers.Add(currentUser.Value);
+        await dbContext.SaveChangesAsync();
+
+        return UnitResult.Success<ApplicationError>();
+    }
+
+    public async Task<UnitResult<ApplicationError>> RemoveFromFavoritesAsync(IEnumerable<Guid> tripIds)
+    {
+        var currentUser = await userService.GetUserFromTokenAsync();
+        if (currentUser.IsFailure)
+            return currentUser.Error;
+
+        var tripsToRemove = await dbContext.Trips
+            .Include(t => t.FavoritedByUsers)
+            .Where(t => tripIds.Contains(t.Id) && t.FavoritedByUsers.Any(u => u.Id == currentUser.Value.Id))
+            .ToListAsync();
+
+        foreach (var trip in tripsToRemove)
+        {
+            trip.FavoritedByUsers.Remove(currentUser.Value);
+        }
+
+        await dbContext.SaveChangesAsync();
+        return UnitResult.Success<ApplicationError>();
+    }
+
+    public async Task<Result<List<TripDto>, ApplicationError>> GetFavoriteTripsAsync()
+    {
+        var currentUser = await userService.GetUserFromTokenAsync();
+        if (currentUser.IsFailure)
+            return currentUser.Error;
+
+        var favoriteTrips = await dbContext.Trips
+            .Include(t => t.Days)
+                .ThenInclude(d => d.Places)
+            .Include(t => t.Reviews)
+            .Include(t => t.FavoritedByUsers)
+            .Where(t => t.FavoritedByUsers.Any(u => u.Id == currentUser.Value.Id))
+            .ProjectToType<TripDto>()
+            .ToListAsync();
+
+        return favoriteTrips;
     }
 }

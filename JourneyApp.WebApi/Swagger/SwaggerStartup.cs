@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace JourneyApp.WebApi.Swagger;
 
@@ -13,9 +14,15 @@ public static class SwaggerStartup
                 Type = "string",
                 Format = "date"
             });
+            
+            options.MapType<IFormFile>(() => new OpenApiSchema
+            {
+                Type = "string",
+                Format = "binary"
+            });
 
             options.SchemaFilter<EnumSchemaFilter>();
-
+            options.EnableAnnotations();  // Enable Swagger annotations
 
             var securityScheme = new OpenApiSecurityScheme
             {

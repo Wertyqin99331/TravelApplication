@@ -28,9 +28,21 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
+builder.Services.AddCors(options =>
+{
+});
+
 builder.Services.AddAndConfigureMapster();
 
 var app = builder.Build();
+
+app.UseCors(corsOptions =>
+{
+    corsOptions.AllowAnyHeader()
+        .AllowAnyMethod()
+        .SetIsOriginAllowed(_ => true)
+        .AllowCredentials();
+});
 
 app.UseExceptionHandler();
 

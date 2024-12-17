@@ -33,6 +33,8 @@ public class User : IdentityUser<Guid>
             SecurityStamp = Guid.NewGuid().ToString()
         };
         
+        
+        
         return user;
     }
 

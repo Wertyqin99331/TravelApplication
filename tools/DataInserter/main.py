@@ -8,7 +8,7 @@ conn = psycopg2.connect(
     dbname="journeyapp",
     user="postgres",
     password="postgres",
-    host="localhost",
+    host="eighty-days-play.loca.lt",
     port="5432"
 )
 cursor = conn.cursor()

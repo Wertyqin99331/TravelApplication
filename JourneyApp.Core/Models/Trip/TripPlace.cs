@@ -15,6 +15,7 @@ public class TripPlace
     public Title Title { get; set; } = null!;
     public Description Description { get; set; } = null!;
     public double Price { get; set; }
+    public string? ImageUrl { get; set; }
     
     public Guid TripDayId { get; set; }
     [JsonIgnore]

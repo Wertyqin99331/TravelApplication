@@ -9,5 +9,6 @@ public record TripDto(
     DateOnly StartDate,
     DateOnly EndDate,
     double AverageRating,
+    string? ImageUrl,
     List<TripDayDto> Days,
     List<TripReviewDto> Reviews);

@@ -39,7 +39,7 @@ public static class AuthenticationEndpoints
             .Produces<ApplicationError>(StatusCodes.Status400BadRequest)
             .Produces<ProblemDetails>(StatusCodes.Status500InternalServerError)
             .RequireAuthorization()
-            .DisableAntiforgery();  // Since we're handling file uploads, we'll disable antiforgery for this endpoint
+            .DisableAntiforgery();
 
         endpoint
             .MapGet("/profile", GetProfile)

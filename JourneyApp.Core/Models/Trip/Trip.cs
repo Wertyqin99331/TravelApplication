@@ -16,6 +16,7 @@ public class Trip
     public double Price { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
+    public string? ImageUrl { get; set; }
 
     public double AverageRating => this.Reviews.Count == 0 ? 0 : this.Reviews.Average(r => r.Rating.Value);
     public double OverallPrice => this.Days.Sum(d => d.Places.Sum(p => p.Price));

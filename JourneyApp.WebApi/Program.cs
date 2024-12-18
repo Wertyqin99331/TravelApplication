@@ -5,11 +5,9 @@ using JourneyApp.Infrastructure.Database.Helpers;
 using JourneyApp.WebApi.Authentication;
 using JourneyApp.WebApi.Endpoints.Authentication;
 using JourneyApp.WebApi.Endpoints.Trip;
-using JourneyApp.WebApi.Filters;
 using JourneyApp.WebApi.GlobalExceptionHandler;
 using JourneyApp.WebApi.Mapping;
 using JourneyApp.WebApi.Swagger;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,8 +60,5 @@ app.UseAntiforgery();
 var prefix = app.MapGroup("/api");
 prefix.MapAuthenticationEndpoints();
 prefix.MapTripEndpoints();
-
-prefix.MapGet("/", () => new UserProfile("kek@mail.ru", "Ilai", "Surname", null))
-    .AddEndpointFilter<ResponseFieldsFilter>();
 
 app.Run();

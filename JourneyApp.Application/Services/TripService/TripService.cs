@@ -19,13 +19,14 @@ public class TripService(IJourneyAppDbContext dbContext, IUserService userServic
     public async Task<Result<List<TripDto>, ApplicationError>> GetTripsAsync(GetTripsBody body)
     {
         logger.LogInformation($"Min rating is {body.MinRating}");
-        
+
         var query = dbContext
             .Trips
             .Include(t => t.Days)
             .ThenInclude(d => d.Places)
             .Include(t => t.Reviews)
-            .AsQueryable();
+            .AsQueryable()
+            .AsSplitQuery();
 
         if (!string.IsNullOrWhiteSpace(body.Country))
         {
@@ -168,6 +169,7 @@ public class TripService(IJourneyAppDbContext dbContext, IUserService userServic
                 .ThenInclude(d => d.Places)
             .Include(t => t.Reviews)
             .Include(t => t.FavoritedByUsers)
+            .AsSplitQuery()
             .Where(t => t.FavoritedByUsers.Any(u => u.Id == currentUser.Value.Id))
             .ProjectToType<TripDto>()
             .ToListAsync();

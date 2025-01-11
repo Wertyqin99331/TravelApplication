@@ -169,8 +169,9 @@ public class TripService(IJourneyAppDbContext dbContext, IUserService userServic
                 .ThenInclude(d => d.Places)
             .Include(t => t.Reviews)
             .Include(t => t.FavoritedByUsers)
-            .AsSplitQuery()
             .Where(t => t.FavoritedByUsers.Any(u => u.Id == currentUser.Value.Id))
+            .AsSplitQuery()
+
             .ProjectToType<TripDto>()
             .ToListAsync();
 

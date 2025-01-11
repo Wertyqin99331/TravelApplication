@@ -2,13 +2,14 @@ import json
 import uuid
 import psycopg2
 from datetime import datetime
+import os
 
 # Database connection
 conn = psycopg2.connect(
     dbname="journeyapp",
     user="postgres",
     password="postgres",
-    host="eighty-days-play.loca.lt",
+    host="localhost",
     port="5432"
 )
 cursor = conn.cursor()
@@ -63,13 +64,24 @@ def insert_data(json_file_path):
 
     # Commit changes to the database
     conn.commit()
-    print("Data insertion completed.")
+    print(f"Data insertion completed for {json_file_path}.")
 
-# Path to the JSON file
-json_file_path = 'data/data3.json'
+# Function to find all JSON files in a directory
+def process_json_files(directory):
+    # Iterate over all files in the directory
+    for filename in os.listdir(directory):
+        # Check if the file has a .json extension
+        if filename.endswith(".json"):
+            # Construct the full file path
+            json_file_path = os.path.join(directory, filename)
+            # Call the insert_data function for each JSON file
+            insert_data(json_file_path)
 
-# Run the insertion
-insert_data(json_file_path)
+# Path to the directory containing JSON files
+json_directory = 'data'
+
+# Process all JSON files in the directory
+process_json_files(json_directory)
 
 # Close the connection
 cursor.close()
